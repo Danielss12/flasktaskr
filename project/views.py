@@ -1,7 +1,9 @@
 import sqlite3
 from functools import wraps
 
-from flask import Flask, flash, redirect, render_template, request, session, url_for
+from flask import Flask, flash, redirect, render_template, request, session, url_for, g
+
+from forms import AddTaskForm
 
 #config
 
@@ -19,7 +21,7 @@ def login_required(test):
 		else:
 			flash('You need to login first.')
 			return redirect(url_for('login'))
-		return wrap	
+	return wrap	
 
 
 #route handlers
@@ -47,15 +49,27 @@ def login():
 @login_required
 def tasks():
 	g.db = connect_db()
-
-	cur = g.db.execute('select name, due_date, priority, task_id from tasks where status=1')
-	open_tasks = [dict(name=row[0], due_date=row[1], priority=row[2], task_id=row[3]) for row in cur.fetchall()]
-
-	cur = g.db.execute('select name, due_date, priority, task_id from tasks where status=0')
-	closed_tasks = [dict(name=row[0], due_date=row[1], priority=row[2],task_id=row[3]) for row in cur.fetchall()]
-
+	cur = g.db.execute(
+	'select name, due_date, priority, task_id from tasks where status=1'
+	)
+	open_tasks = [
+	dict(name=row[0], due_date=row[1], priority=row[2],
+	task_id=row[3]) for row in cur.fetchall()
+	]
+	cur = g.db.execute(
+	'select name, due_date, priority, task_id from tasks where status=0'
+	)
+	closed_tasks = [
+	dict(name=row[0], due_date=row[1], priority=row[2],
+	task_id=row[3]) for row in cur.fetchall()
+	]
 	g.db.close()
-	return render_template('tasks.html', form=AddTaskForm(request.form),open_tasks=open_tasks, closed_tasks=closed_tasks)
+	return render_template(
+	'tasks.html',
+	form=AddTaskForm(request.form),
+	open_tasks=open_tasks,
+	closed_tasks=closed_tasks
+	)
 
 @app.route('/add/', methods=['POST'])
 @login_required
@@ -96,5 +110,5 @@ def delete_entry(task_id):
 	flash('The task was deleted.')
 	return redirect(url_for('tasks'))
 
-		
+
 
