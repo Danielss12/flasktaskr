@@ -15,6 +15,7 @@ duplicity==0.7.6
 easygui==0.98.0
 enum34==1.1.2
 Flask==0.10.1
+Flask-SQLAlchemy==2.0
 Flask-WTF==0.11
 html5lib==0.999
 httplib2==0.9.1
@@ -58,6 +59,7 @@ scipy==0.18.1
 service-identity==16.0.0
 six==1.10.0
 software-center-aptd-plugins==0.0.0
+SQLAlchemy==1.1.4
 sqlparse==0.1.18
 stevedore==1.15.0
 Twisted==16.0.0
