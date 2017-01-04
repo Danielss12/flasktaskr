@@ -41,9 +41,14 @@
 </ul>
 {% if session.logged_in %}
 <ul class="nav navbar-nav navbar-right">
-  <li><a>Welcome, {{ username }}.</a></li>
+  <li><a>Welcome {{ username }}.</a></li>
 </ul>
 {% endif %}  
+{% if not session.logged_in %}
+<ul class="nav navbar-nav navbar-right">
+  <li><a>Welcome!</a></li>
+</ul>
+{% endif %} 
 </div><!--/.nav-collapse -->
 </div>
 </div>

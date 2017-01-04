@@ -17,6 +17,8 @@ class UsersTests(unittest.TestCase):
 		db.create_all()
 
 
+
+
 	#executed after each test
 	def tearDown(self):
 		db.session.remove()
