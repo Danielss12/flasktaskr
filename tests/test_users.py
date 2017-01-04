@@ -124,6 +124,12 @@ class UsersTests(unittest.TestCase):
 		for user in users:
 			self.assertEquals(user.role, 'user')
 
+
+
+
+
+
+
 	
 
 

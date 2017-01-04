@@ -162,5 +162,53 @@ class TasksTests(unittest.TestCase):
 		response = self.app.get('delete/1/', follow_redirects=True)
 		self.assertNotIn(b'You can only delete tasks that belong to you.', response.data)
 
+	def test_tasks_template_displays_logged_in_user_name(self):
+		self.register('Fletcher', 'fletcher@me.com', 'python101', 'python101')
+		self.login('Fletcher', 'python101')
+		response = self.app.get('tasks/', follow_redirects=True)
+		self.assertIn(b'Fletcher', response.data)
+
+	def test_users_cant_see_task_modify_links_if_not_their_own(self):
+		self.register('eu', 'eu@eu.com', 'python', 'python')
+		self.login('eu', 'python')
+		self.app.get('tasks/', follow_redirects=True)
+		self.create_task()
+		self.logout()
+		self.register('eu2', 'eu2@eu.com', 'python2', 'python2')
+		response = self.login('eu2', 'python2')
+		self.app.get('tasks/', follow_redirects=True)
+		self.assertNotIn(b'Mark as complete', response.data)
+		self.assertNotIn(b'Delete', response.data)
+
+
+	def test_users_can_see_task_modify_links_if_their_own(self):
+		self.register('eu', 'eu@eu.com', 'python', 'python')
+		self.login('eu', 'python')
+		self.app.get('tasks/', follow_redirects=True)
+		self.create_task()
+		self.logout()
+		self.register('eu2', 'eu2@eu.com', 'python2', 'python2')
+		self.login('eu2', 'python2')
+		self.app.get('tasks/', follow_redirects=True)
+		response = self.create_task()
+		self.assertIn(b'complete/2/', response.data)
+		self.assertIn(b'complete/2/', response.data)
+
+
+	def test_admin_users_can_see_task_modify_links_for_all_tasks(self):
+		self.register('Michael', 'michael@realpython.com','python', 'python')
+		self.login('Michael', 'python')
+		self.app.get('tasks/', follow_redirects=True)
+		self.create_task()
+		self.logout()
+		self.create_admin_user()
+		self.login('Superman', 'allpowerful')
+		self.app.get('tasks/', follow_redirects=True)
+		response = self.create_task()
+		self.assertIn(b'complete/1/', response.data)
+		self.assertIn(b'delete/1/', response.data)
+		self.assertIn(b'complete/2/', response.data)
+		self.assertIn(b'delete/2/', response.data)
+
 if __name__ == "__main__":
 	unittest.main()
